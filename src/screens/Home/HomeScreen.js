@@ -18,9 +18,14 @@ export function HomeScreen() {
   const getBanners = async () => {
     try {
       const response = await homeBannerCtrl.getAll();
-      setBanners(response?.data || null);
+
+      if (response && response.data) {
+        setBanners(response.data);
+      } else {
+        setBanners([]);
+      }
     } catch (error) {
-      Toast.show("Error al obtener los banners", {
+      Toast.show(`Error al obtener banners: ${error.message}`, {
         position: Toast.positions.CENTER,
       });
     }
@@ -29,9 +34,14 @@ export function HomeScreen() {
   const getProducts = async () => {
     try {
       const response = await productCtrl.getLatestPublished();
-      setProducts(response?.data || []);
+
+      if (response && response.data) {
+        setProducts(response.data);
+      } else {
+        setProducts([]);
+      }
     } catch (error) {
-      Toast.show("Error al obtener los productos", {
+      Toast.show(`Error al obtener productos: ${error.message}`, {
         position: Toast.positions.CENTER,
       });
     }
@@ -47,3 +57,5 @@ export function HomeScreen() {
     </Layout.Basic>
   );
 }
+
+export default HomeScreen;

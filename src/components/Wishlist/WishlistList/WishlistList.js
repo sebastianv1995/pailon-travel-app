@@ -12,8 +12,8 @@ export function WishlistList(props) {
 
       {map(products, (product) => (
         <Product
-          key={product.data.id}
-          product={product.data}
+          key={product.id}
+          product={product}
           onReload={onReload}
         />
       ))}

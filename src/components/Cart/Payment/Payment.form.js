@@ -2,11 +2,11 @@ import * as Yup from "yup";
 
 export function initialValues() {
   return {
-    name: "Diego Mendez",
-    number: "4242424242424242",
-    exp_month: "11",
-    exp_year: "39",
-    cvc: "123",
+    name: "",
+    number: "",
+    exp_month: "",
+    exp_year: "",
+    cvc: "",
   };
 }
 

@@ -32,22 +32,50 @@ export function Payment(props) {
             position: Toast.positions.CENTER,
           });
         } else {
+          // Preparar los productos con toda la información necesaria
+          const productsWithDetails = products.map((product) => ({
+            ...product,
+            // Asegurar que tenemos la fecha si está disponible
+            date: product.date || null,
+            // Cualquier otra información del producto que necesites
+          }));
+
           const response = await orderCtrl.payment(
             result.id,
             user.id,
-            products
+            productsWithDetails
           );
 
-          if (size(response) > 0) {
+          // Verificar que la respuesta tenga los datos necesarios
+          if (response && (size(response) > 0 || response.id)) {
             await emptyCart();
-            navigation.navigate(screensName.account.root, {
-              screen: screensName.account.order,
-            });
+
+            // Obtener el ID de la orden creada
+            const orderId =
+              response.id || response.data?.id || response.orderId;
+
+            if (orderId) {
+              // Navegar directamente a los detalles de la orden con el ID
+              navigation.navigate(screensName.account.root, {
+                screen: screensName.account.order,
+                params: { id: orderId },
+              });
+            } else {
+              // Si no hay ID específico, navegar a la lista de órdenes
+              navigation.navigate(screensName.account.root, {
+                screen: screensName.account.orders,
+              });
+
+              Toast.show("¡Pago realizado exitosamente!", {
+                position: Toast.positions.CENTER,
+              });
+            }
           } else {
-            new Error("Error al realizar la reserva");
+            throw new Error("Error al realizar la reserva");
           }
         }
       } catch (error) {
+        console.error("Error en el pago:", error);
         Toast.show("Error al realizar el pago", {
           position: Toast.positions.CENTER,
         });

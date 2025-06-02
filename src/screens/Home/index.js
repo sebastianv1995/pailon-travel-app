@@ -1,4 +1,4 @@
-export * from "./HomeScreen";
-export * from "./ProductScreen";
-export * from "./SearchScreen";
-export * from "./TimeSlotSelector";
+export { HomeScreen } from "./HomeScreen";
+export { ProductScreen } from "./ProductScreen";
+export { SearchScreen } from "./SearchScreen";
+export { TimeSlotSelector } from "./TimeSlotSelector";

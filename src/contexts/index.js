@@ -1,3 +1,4 @@
-export * from "./AuthContext";
-export * from "./SearchContext";
-export * from "./CartContext";
+export { AuthProvider, AuthContext } from "./AuthContext";
+export { SearchProvider, SearchContext } from "./SearchContext";
+export { CartProvider, CartContext } from "./CartContext";
+export { WishlistProvider, WishlistContext, useWishlistContext } from "./WishlistContext";
