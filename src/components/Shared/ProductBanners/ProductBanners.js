@@ -13,15 +13,23 @@ export function ProductBanners(props) {
   const [bannerActive, setBannerActive] = useState(0);
   const navigation = useNavigation();
 
-  const goToProducto = (id) => {
-    navigation.navigate(screensName.home.product, { productId: id });
+  // ✅ FUNCIÓN CORREGIDA: Usar el ID del producto relacionado
+  const goToProducto = (banner) => {
+
+    // Verificar que el banner tenga un producto relacionado
+    if (banner.attributes.product?.data) {
+      const productId = banner.attributes.product.data.id;
+      navigation.navigate(screensName.home.product, { productId });
+    } else {
+
+    }
   };
 
   const renderItem = ({ item }) => {
     const urlImage = item.attributes.banner.data.attributes.url;
 
     return (
-      <Pressable onPress={() => goToProducto(item.id)}>
+      <Pressable onPress={() => goToProducto(item)}>
         <Image source={{ uri: urlImage }} style={styles.carousel} />
       </Pressable>
     );

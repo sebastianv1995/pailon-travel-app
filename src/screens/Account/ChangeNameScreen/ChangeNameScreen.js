@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { userCtrl } from "../../../api";
 import { useAuth } from "../../../hooks";
 import { globalStyles } from "../../../styles";
+import { ENV } from "../../../utils";
 import { initialValues, validationSchema } from "./ChangeNameScreen.form";
 import { styles } from "./ChangeNameScreen.styles";
 
@@ -18,15 +19,58 @@ export function ChangeNameScreen() {
     validationSchema: validationSchema(),
     validateOnChange: false,
     onSubmit: async (formValue) => {
+      const startTime = Date.now();
+      
       try {
-        await userCtrl.update(user.id, formValue);
+
+        
+        // Llamada al servidor
+        const response = await userCtrl.update(user.id, formValue);
+        
+        // 🔍 LOG 4: Respuesta exitosa del servidor
+        const endTime = Date.now();
+        
+        // Actualizar el estado local
         updateUser("firstname", formValue.firstname);
         updateUser("lastname", formValue.lastname);
+
+        
+        // Mostrar toast de éxito
+        Toast.show("Nombre actualizado correctamente", {
+          position: Toast.positions.CENTER,
+          backgroundColor: "#4CAF50"
+        });
+        
         navigation.goBack();
+        
       } catch (error) {
+        // 🔍 LOG 5: Error detallado
+        const endTime = Date.now();
+
+        
+        // Log específico del error de response
+        if (error.status) {
+
+          
+          // Intentar leer el body del error
+          try {
+            const errorBody = await error.text();
+            
+            // Intentar parsear como JSON
+            try {
+              const errorJson = JSON.parse(errorBody);
+            } catch (parseError) {
+            }
+          } catch (bodyError) {
+          }
+        }
+        
+        // Mostrar toast de error
         Toast.show("Error al actualizar los datos", {
           position: Toast.positions.CENTER,
+          backgroundColor: "#F44336"
         });
+        
       }
     },
   });
@@ -36,14 +80,18 @@ export function ChangeNameScreen() {
       <TextInput
         label="Nombre"
         style={globalStyles.form.input}
-        onChangeText={(text) => formik.setFieldValue("firstname", text)}
+        onChangeText={(text) => {
+          formik.setFieldValue("firstname", text);
+        }}
         value={formik.values.firstname}
         error={formik.errors.firstname}
       />
       <TextInput
         label="Apellidos"
         style={globalStyles.form.input}
-        onChangeText={(text) => formik.setFieldValue("lastname", text)}
+        onChangeText={(text) => {
+          formik.setFieldValue("lastname", text);
+        }}
         value={formik.values.lastname}
         error={formik.errors.lastname}
       />
@@ -51,7 +99,9 @@ export function ChangeNameScreen() {
       <Button
         mode="contained"
         style={globalStyles.form.btnSubmit}
-        onPress={formik.handleSubmit}
+        onPress={() => {
+          formik.handleSubmit();
+        }}
         loading={formik.isSubmitting}
       >
         Cambiar nombre y apellidos

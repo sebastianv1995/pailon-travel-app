@@ -48,9 +48,7 @@ export function TabNavigation() {
   );
 }
 
-function setIcon(route, routeStatus, totalProducts, totalFavorites) {
-  console.log("🔄 [TabNavigation] setIcon render", { route: route.name, totalFavorites, totalProducts });
-  
+function setIcon(route, routeStatus, totalProducts, totalFavorites) {  
   let iconName = "";
   let color = "#fff";
 

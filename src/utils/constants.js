@@ -1,5 +1,6 @@
 export const ENV = {
-  API_URL: "http://localhost:1337/api",
+  // API_URL: "http://localhost:1337/api",
+  API_URL: "https://pailontravel-banos-5a22cb25d6ed.herokuapp.com/api",
   ENDPOINTS: {
     REGISTER: "auth/local/register",
     LOGIN: "auth/local",
