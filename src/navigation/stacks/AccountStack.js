@@ -9,12 +9,15 @@ import {
   OrdersScreen,
 } from "../../screens/Account";
 import { screensName } from "../../utils";
+import { globalHeaderOptions, modalHeaderOptions } from "../headerConfig";
 
 const Stack = createNativeStackNavigator();
 
 export function AccountStack() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={globalHeaderOptions} // ✅ Aplicar estilos globales
+    >
       <Stack.Screen
         name={screensName.account.account}
         component={AccountScreen}
@@ -24,37 +27,50 @@ export function AccountStack() {
       <Stack.Screen
         name={screensName.account.changeName}
         component={ChangeNameScreen}
-        options={{ title: "Cambiar nombre y apellido" }}
+        options={{ 
+          title: "Cambiar nombre y apellido",
+        }}
       />
 
       <Stack.Screen
         name={screensName.account.changeEmail}
         component={ChangeEmailScreen}
-        options={{ title: "Cambiar correo electronico" }}
+        options={{ 
+          title: "Cambiar correo electrónico",
+        }}
       />
 
       <Stack.Screen
         name={screensName.account.changeUsername}
         component={ChangeUsernameScreen}
-        options={{ title: "Cambiar cambiar nombre de usuario" }}
+        options={{ 
+          title: "Cambiar nombre de usuario",
+        }}
       />
 
       <Stack.Screen
         name={screensName.account.changePassword}
         component={ChangePasswordScreen}
-        options={{ title: "Cambiar contraseña" }}
+        options={{ 
+          title: "Cambiar contraseña",
+        }}
       />
 
       <Stack.Screen
         name={screensName.account.orders}
         component={OrdersScreen}
-        options={{ title: "Mis Reservas" }}
+        options={{ 
+          title: "Mis Reservas",
+        }}
       />
 
       <Stack.Screen
         name={screensName.account.order}
         component={OrderScreen}
-        options={{ title: "", presentation: "modal" }}
+        options={{ 
+          ...modalHeaderOptions, // ✅ Usar configuración de modal
+          title: "Detalles de la Reserva",
+        }}
       />
     </Stack.Navigator>
   );

@@ -70,31 +70,100 @@ export function ProductScreen(props) {
     return `${day} de ${month} de ${year}`;
   };
 
-  // Función de validación simplificada y robusta
+  // 🔧 FUNCIÓN CORREGIDA PARA CREAR FECHA LOCAL SIN TIMEZONE ISSUES
+  const createLocalDateTimeString = (dateTime) => {
+    // ✅ Crear string en formato local sin conversión UTC
+    const year = dateTime.getFullYear();
+    const month = (dateTime.getMonth() + 1).toString().padStart(2, '0');
+    const day = dateTime.getDate().toString().padStart(2, '0');
+    const hours = dateTime.getHours().toString().padStart(2, '0');
+    const minutes = dateTime.getMinutes().toString().padStart(2, '0');
+    
+    // ✅ Formato: YYYY-MM-DDTHH:mm:ss (sin timezone)
+    const localDateTimeString = `${year}-${month}-${day}T${hours}:${minutes}:00`;
+    
+    console.log('📅 Creando fecha local:', {
+      original: dateTime.toLocaleString(),
+      localString: localDateTimeString,
+      isoString: dateTime.toISOString()
+    });
+    
+    return localDateTimeString;
+  };
+
+  // 🔧 FUNCIÓN MEJORADA PARA VALIDAR RESERVA
   const validateReservation = () => {
     const now = new Date();
     const selectedDate = new Date(selectedDateTime);
 
-    // Validar que la fecha sea futura (al menos hoy)
-    const isFutureDate =
-      selectedDate >=
-      new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    // ✅ Validar que la fecha sea futura (considerando zona horaria local)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const selectedDateOnly = new Date(selectedDate);
+    selectedDateOnly.setHours(0, 0, 0, 0);
+    
+    const isFutureDate = selectedDateOnly >= today;
 
-    // Simplificar: si hay schedule disponible y se seleccionó un horario, es válido
+    // ✅ Para el día actual, validar que la hora también sea futura
+    const isSameDay = selectedDateOnly.getTime() === today.getTime();
+    const isFutureTime = isSameDay ? selectedDate > now : true;
+
     const hasScheduleData = schedule && schedule.length > 0;
     const hasTimeSlotSelected = hasSelectedTimeSlot;
 
-    // Validar que la fecha y hora sean futuras (importante para el día actual)
-    const isFutureDateTime = selectedDate > now;
+    const isValid = isFutureDate && isFutureTime && hasScheduleData && hasTimeSlotSelected;
 
-    const isValid =
-      isFutureDate &&
-      hasScheduleData &&
-      hasTimeSlotSelected &&
-      isFutureDateTime;
+    console.log('✅ Validación de reserva:', {
+      isFutureDate,
+      isFutureTime,
+      hasScheduleData,
+      hasTimeSlotSelected,
+      isValid,
+      selectedDateTime: selectedDateTime.toLocaleString(),
+      now: now.toLocaleString()
+    });
 
     setIsReservationValid(isValid);
     return isValid;
+  };
+
+  // 🔧 FUNCIÓN CORREGIDA PARA MANEJAR CAMBIO DE FECHA EN DateTimePicker
+  const handleDateChange = (event, date) => {
+    setShowDatePicker(false);
+    if (date) {
+      console.log('📅 Fecha seleccionada del picker:', date.toLocaleString());
+      
+      // ✅ Crear nueva fecha manteniendo la hora previamente seleccionada
+      const newDate = new Date(date);
+      newDate.setHours(
+        selectedDateTime.getHours(),
+        selectedDateTime.getMinutes(),
+        0,
+        0
+      );
+      
+      console.log('🕐 Nueva fecha con hora preservada:', newDate.toLocaleString());
+      
+      setSelectedDateTime(newDate);
+      updateAvailableTimeSlots(newDate);
+      
+      // Reset time selection cuando cambia la fecha
+      setHasSelectedTimeSlot(false);
+    }
+  };
+
+  // 🔧 FUNCIÓN CORREGIDA PARA EL TimeSlotSelector
+  const handleTimeSelection = (newDateTime) => {
+    console.log('🎯 Hora seleccionada desde TimeSlotSelector:', {
+      newDateTime: newDateTime.toLocaleString(),
+      hours: newDateTime.getHours(),
+      minutes: newDateTime.getMinutes()
+    });
+    
+    setSelectedDateTime(newDateTime);
+    setHasSelectedTimeSlot(true);
+    validateDateTime();
   };
 
   const getProduct = async () => {
@@ -188,20 +257,7 @@ export function ProductScreen(props) {
           <DateTimePicker
             value={selectedDateTime}
             mode="date"
-            onChange={(event, date) => {
-              setShowDatePicker(false);
-              if (date) {
-                const newDate = new Date(date);
-                newDate.setHours(
-                  selectedDateTime.getHours(),
-                  selectedDateTime.getMinutes(),
-                  0,
-                  0
-                );
-                setSelectedDateTime(newDate);
-                updateAvailableTimeSlots(newDate);
-              }
-            }}
+            onChange={handleDateChange} // ✅ Usar función corregida
             minimumDate={new Date()}
             locale="es-ES"
             textColor="black"
@@ -213,11 +269,7 @@ export function ProductScreen(props) {
         <TimeSlotSelector
           schedule={schedule}
           selectedDateTime={selectedDateTime}
-          onTimeSelected={(newDateTime) => {
-            setSelectedDateTime(newDateTime);
-            setHasSelectedTimeSlot(true);
-            validateDateTime();
-          }}
+          onTimeSelected={handleTimeSelection} // ✅ Usar función corregida
         />
 
         {/* Indicador visual de estado de validación */}
@@ -306,7 +358,7 @@ export function ProductScreen(props) {
           productId={productId}
           data={{
             productId,
-            date: selectedDateTime.toISOString(),
+            date: createLocalDateTimeString(selectedDateTime), // ✅ Usar función sin timezone
           }}
           isValid={isReservationValid}
         />

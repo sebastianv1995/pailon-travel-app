@@ -1,4 +1,4 @@
-import { StatusBar as StatusBarRN, SafeAreaView } from "react-native";
+import { StatusBar as StatusBarRN, SafeAreaView, Platform, View } from "react-native";
 import { styled } from "./StatusBar.styles";
 
 export function StatusBar(props) {
@@ -7,8 +7,19 @@ export function StatusBar(props) {
 
   return (
     <>
-      <StatusBarRN backgroundColor={backgroundColor} {...rest} />
-      <SafeAreaView style={styles.safeAreaView} />
+      <StatusBarRN 
+        backgroundColor={backgroundColor} 
+        translucent={Platform.OS === 'android'} // ✅ Importante para Android
+        {...rest} 
+      />
+      {/* ✅ SafeAreaView solo para la barra superior */}
+      {Platform.OS === 'ios' && (
+        <SafeAreaView style={styles.safeAreaView} />
+      )}
+      {/* ✅ Para Android, usar View con altura específica */}
+      {Platform.OS === 'android' && (
+        <View style={[styles.safeAreaView, styles.androidStatusBar]} />
+      )}
     </>
   );
 }
